@@ -9,6 +9,9 @@ from UFO_Monster import UFO_MONSTER
 from Meteor import METEOR
 
 
+#운석 떨어지는거 다시 초기화 시켜주기
+#중간에 레이저가 사라지는 버그
+
 FPS = 28
 pad_width = 800
 pad_height = 200
