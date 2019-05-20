@@ -152,11 +152,11 @@ def runGame():
                     if bxy[1] > boss.rect.y and bxy[1] <boss.rect.y + boss.sprite_height:
                         bullet_xy.remove(bxy)
                         isShotBoss = True
-                if bxy[0] > meteor_x :
+                if bxy[0] > meteor_x and meteor != None:
                     if meteor!=None and bxy[1] > meteor_y and bxy[1] < meteor_y + meteor.sprite_height:
                         bullet_xy.remove(bxy)
                         isShotMeteor =True
-                if bxy[0] > UFO_Monster.rect.x :
+                if bxy[0] > UFO_Monster.rect.x : ##여기서도 오류남 나오지않았는데 xy좌표나옴
                     if  bxy[1] > UFO1.rect.y and bxy[1] < UFO1.rect.y + UFO1.sprite_height:
                         bullet_xy.remove(bxy)
                         isShotUFO =True
