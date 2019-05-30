@@ -8,17 +8,37 @@ from time import sleep
 from UFO_Monster import UFO_MONSTER
 from Meteor import METEOR
 
-
-#운석 떨어지는거 다시 초기화 시켜주기
-#중간에 레이저가 사라지는 버그
-
 FPS = 28
 pad_width = 800
 pad_height = 200
 background_width = 800
 WHITE = (255,255,255)
+RED = (255,0,0)
 
+meteor1_width = 34
+meteor1_height = 36
+meteor2_width = 86
+meteor2_height = 60
 
+def textObj(text,font) :
+    textSurface = font.render(text,True,RED)
+    return textSurface,textSurface.get_rect()
+
+def dispMessage(text) :
+    global gamepad
+    global crashed
+
+    largeText = pygame.font.Font("D2coding.ttf",115)
+    TextSurf,TextRect = textObj(text,largeText)
+    TextRect.center = ((pad_width/2),(pad_height/2))
+    gamepad.blit(TextSurf,TextRect)
+    pygame.display.update()
+    sleep(2)
+    crashed = True
+
+def crash():
+    global gamepad
+    dispMessage('Crashed!')
 
 def drawObject(obj,x,y):
     global gamepad
@@ -27,7 +47,7 @@ def drawObject(obj,x,y):
 def runGame():
     global background1,background2,UFO1,clock,boss,UFO_Monster
     global bullet,meteors
-
+    global crashed
     
     font = pygame.font.Font("D2coding.ttf",20)
      
@@ -36,8 +56,8 @@ def runGame():
     isShotBoss = False
     isShotUFO = False
     isShotMeteor = False
- 
     crashed = False
+    
     clock = pygame.time.Clock()
 
    # UFO1.rect.x = pad_width * 0.05
@@ -47,7 +67,7 @@ def runGame():
     boss.rect.y = 0
 
     meteor_x = pad_width
-    meteor_y = random.randrange(0,pad_height)
+    meteor_y = random.randrange(0,pad_height-36)
     random.shuffle(meteors)
     meteor = meteors[0]
 
@@ -152,11 +172,11 @@ def runGame():
                     if bxy[1] > boss.rect.y and bxy[1] <boss.rect.y + boss.sprite_height:
                         bullet_xy.remove(bxy)
                         isShotBoss = True
-                if bxy[0] > meteor_x and meteor != None:
+                if bxy[0] > meteor_x and meteor != None and isShotMeteor == False:
                     if meteor!=None and bxy[1] > meteor_y and bxy[1] < meteor_y + meteor.sprite_height:
                         bullet_xy.remove(bxy)
-                        isShotMeteor =True
-                if bxy[0] > UFO_Monster.rect.x : ##여기서도 오류남 나오지않았는데 xy좌표나옴
+                        isShotMeteor = True
+                if bxy[0] > UFO_Monster.rect.x and isShotUFO == False: ##여기서도 오류남 나오지않았는데 xy좌표나옴
                     if  bxy[1] > UFO1.rect.y and bxy[1] < UFO1.rect.y + UFO1.sprite_height:
                         bullet_xy.remove(bxy)
                         isShotUFO =True
@@ -167,11 +187,21 @@ def runGame():
                         bullet_xy.remove(bxy)
                     except :
                         pass
-                  
+
+        if UFO1.rect.x + UFO1.sprite_width > meteor_x:
+            if (UFO1.rect.y > meteor_y and UFO1.rect.y < meteor_y+meteor.sprite_height) or (UFO1.rect.y + UFO1.sprite_height > meteor_y and UFO1.rect.y + UFO1.sprite_height < meteor_y + meteor.sprite_height):
+                crash()
+
+        if UFO1.rect.x + UFO1.sprite_width > UFO_Monster.rect.x:
+            if (UFO1.rect.y > UFO_Monster.rect.y and UFO1.rect.y < UFO_Monster.rect.y+UFO_Monster.sprite_height) or (UFO1.rect.y + UFO1.sprite_height > UFO1.rect.y and UFO1.rect.y + UFO1.sprite_height < UFO_Monster.rect.y + UFO_Monster.sprite_height):
+                crash()
 
         # 2) 게임 상태 업데이트      
+        
+        
         UFO1.update()
-        if not isShotUFO :
+
+        if not isShotUFO and UFO_Monster.IsAlive:
             UFO_Monster.update()
         if time>=10 and boss.IsAlive:
             boss.update()
@@ -179,11 +209,30 @@ def runGame():
             meteor.update()
 
         # 3) 게임 상태 그리기
-        drawObject(UFO1.image,UFO1.rect.x,UFO1.rect.y)
+
+        if not UFO1.HP <= 0 :
+            drawObject(UFO1.image,UFO1.rect.x,UFO1.rect.y)
+
         if not isShotUFO :
-           drawObject(UFO_Monster.image,UFO_Monster.rect.x,UFO_Monster.rect.y)
+            if not UFO_Monster.HP <= 0:
+                if not isShotUFO :
+                     drawObject(UFO_Monster.image,UFO_Monster.rect.x,UFO_Monster.rect.y)
+                else :
+                     drawObject(UFO_Monster.image,UFO_Monster.rect.x,UFO_Monster.rect.y)
+                     UFO1.HP -= 1
+                     isShotUFO = False
+
+
         if meteor != None and not isShotMeteor :
-            drawObject(meteor.image,meteor_x,meteor_y)
+           if not meteor.HP <= 0:
+               if not isShotMeteor :
+                   drawObject(meteor.image, meteor_x,meteor_y)
+               else :
+                   drawObject(meteor.image, meteor_x,meteor_y)
+                   meteor.HP -= 1
+                   isShotMeteor = False
+                   #random.shuffle(meteors)
+                   #meteor = meteors[0]
         
         if len(bullet_xy) != 0:
             for bx,by in bullet_xy:
@@ -199,6 +248,11 @@ def runGame():
                     isShotBoss = False
          else :
                 boss.IsAlive = False
+
+        if meteor == None :
+            isShotMeteor = False
+            random.shuffle(meteors)
+            meteor = meteors[0]
        
 
         pygame.display.update()
@@ -215,7 +269,7 @@ def initGame():
     UFO1 = UFO()
     boss = BOSS()
     meteors = []
-    for i in range(5) :
+    for i in range(3) :
         meteors.append(None)
 
     meteors.append(METEOR())

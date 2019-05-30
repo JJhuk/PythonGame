@@ -10,7 +10,7 @@ class UFO_MONSTER(Sprite):
         self.sprite_image = 'UFO_Monster.bmp'
         self.sprite_width = 46.75
         self.sprite_height = 43
-        self.HP = 10
+        self.HP = 1
         self.IsAlive = True
         self.sprite_sheet = pygame.image.load(
                                 self.sprite_image).convert()
