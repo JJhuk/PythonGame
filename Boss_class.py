@@ -12,6 +12,8 @@ class BOSS(Sprite):
         self.sprite_height = 180
         self.HP = 10
         self.IsAlive = True
+        self.Attack = False
+        self.Time = 0
         self.sprite_sheet = pygame.image.load(
                                 self.sprite_image).convert()
         self.sprite_columns = 15    # 기둥이 몇 게인지
