@@ -68,7 +68,8 @@ def runGame():
     global background1,background2,UFO1,clock,boss,UFO_Monster
     global bullet,meteors,boss_bullet
     global crashed,shot_sound
-    
+    global Score
+
     font = pygame.font.Font("D2coding.ttf",20)
      
     bullet_xy = []
@@ -85,6 +86,8 @@ def runGame():
     UFO1.rect.x = 50
     boss.rect.x = 550
     boss.rect.y = 0
+
+    Score = 0
 
     boss_bullet.rect.x = boss.rect.x
     boss_bullet.rect.y = random.randrange(0,boss.sprite_height-boss_bullet.sprite_height)
@@ -109,9 +112,15 @@ def runGame():
         #시간에 따른 점수 + 폰트 출력
        
         time = pygame.time.get_ticks() // 1000
-        textSurface = font.render("Time : "+str(time), True,(216,216,216))
-        textRect = textSurface.get_rect()
-        textRect.center = (80,20)
+        time_textSurface = font.render("Time : "+str(time), True,(216,216,216))
+        
+        time_textRect = time_textSurface.get_rect()
+        time_textRect.center = (80,20)
+
+        #Score 점수
+        Score_textSurface = font.render("Score : "+str(Score),True,(200,0,0))
+        Score_textRect = Score_textSurface.get_rect()
+        Score_textRect.center = (200,20)
 
         plus_score = 0
 
@@ -153,7 +162,8 @@ def runGame():
         drawObject(background1,background1_x,0)
         drawObject(background2,background2_x,0)
 
-        drawObject(textSurface,textRect.x,textRect.y)
+        drawObject(time_textSurface,time_textRect.x,time_textRect.y)
+        drawObject(Score_textSurface,Score_textRect.x,Score_textRect.y)
 
         #UFO_Monster Positon
         UFO_Monster.rect.x -= 7
@@ -202,6 +212,7 @@ def runGame():
                 if bxy[0] > boss.rect.x and boss.IsAlive and time>=10:
                     if bxy[1] > boss.rect.y and bxy[1] <boss.rect.y + boss.sprite_height:
                         bullet_xy.remove(bxy)
+                        Score += 1
                         isShotBoss = True
                 if bxy[0] > meteor_x and meteor != None and isShotMeteor == False:
                     if meteor!=None and bxy[1] > meteor_y and bxy[1] < meteor_y + meteor.sprite_height:
@@ -209,6 +220,7 @@ def runGame():
                             bullet_xy.remove(bxy)
                         except :
                             pass
+                        Score += 1
                         meteor_x = pad_width
                         meteor_y = random.randrange(0,pad_height)
                         random.shuffle(meteors)
@@ -220,6 +232,7 @@ def runGame():
                             bullet_xy.remove(bxy)
                         except :
                             pass
+                        Score += 1
                         UFO_Monster.rect.x = pad_width
                         UFO_Monster.rect.y = random.randrange(0,pad_height)
                         isShotUFO =True

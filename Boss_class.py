@@ -10,7 +10,7 @@ class BOSS(Sprite):
         self.sprite_image = 'boss.png'
         self.sprite_width = 221.5
         self.sprite_height = 180
-        self.HP = 10
+        self.HP = 50
         self.IsAlive = True
         self.Attack = False
         self.Time = 0
